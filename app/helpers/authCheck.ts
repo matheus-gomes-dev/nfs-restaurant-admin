@@ -1,10 +1,10 @@
 import { cookies } from "next/headers"
 
-export default async function authCheck(): Promise<boolean> {
+export default async function authCheck(): Promise<string | null> {
   const cookieStore = await cookies()
   const token = cookieStore.get('token')?.value
   if (!token) {
-    return false
+    return null
   }
   const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify`, {
     method: 'POST',
@@ -13,7 +13,7 @@ export default async function authCheck(): Promise<boolean> {
     },
   })
   if (apiResponse.status === 200) {
-    return true
+    return token
   }
-  return false
+  return null
 }

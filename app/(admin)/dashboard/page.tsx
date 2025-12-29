@@ -3,8 +3,8 @@ import { redirect } from "next/navigation"
 
 
 export default async function DashboardPage() {
-  const isAuthenticated = await authCheck()
-  if (!isAuthenticated) {
+  const token = await authCheck()
+  if (!token) {
     redirect('/')
   }
   return <h1>Dashboard</h1>

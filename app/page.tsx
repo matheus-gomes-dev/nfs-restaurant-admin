@@ -5,7 +5,7 @@ import { ToastContainer } from 'react-toastify'
 import authCheck from './helpers/authCheck'
 
 export default async function Home() {
-  const isAuthenticated = await authCheck()
+  const isAuthenticated = await authCheck() !== null
   if (isAuthenticated) {
     redirect('/dashboard')
   }
