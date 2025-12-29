@@ -15,7 +15,7 @@ export default async function AdminLayout({
   return (
     <div>
       <Header />
-      <main>{children}</main>
+      <main className="md:ml-16 md:mr-16 ml-6 mr-6 mt-6">{children}</main>
     </div>
   )
 }
