@@ -1,5 +1,6 @@
+import authCheck from "@/app/helpers/authCheck"
 import { redirect } from "next/navigation"
-import authCheck from "../helpers/authCheck"
+
 
 export default async function DashboardPage() {
   const isAuthenticated = await authCheck()
