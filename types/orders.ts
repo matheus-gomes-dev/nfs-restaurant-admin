@@ -1,5 +1,7 @@
 import { Product } from "./products";
 
+export type OrderStatus = 'aguardando' | 'completa' | 'cancelada';
+
 export interface Order {
   _id: string;
   createdAt: string;
@@ -7,6 +9,6 @@ export interface Order {
   name: string;
   items: Product[];
   comment?: string;
-  status: 'aguardando' | 'completa' | 'canceleda';
+  status: OrderStatus;
   total: number;
 }

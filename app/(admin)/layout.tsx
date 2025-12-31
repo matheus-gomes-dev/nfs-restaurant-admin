@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import authCheck from "../helpers/authCheck"
 import Header from "../components/Header"
+import { ToastContainer } from "react-toastify"
 
 export default async function AdminLayout({
   children,
@@ -16,6 +17,7 @@ export default async function AdminLayout({
     <div>
       <Header />
       <main className="md:ml-16 md:mr-16 ml-6 mr-6 mt-6">{children}</main>
+      <ToastContainer />
     </div>
   )
 }
