@@ -10,5 +10,4 @@ export interface Order {
   items: Product[];
   comment?: string;
   status: OrderStatus;
-  total: number;
 }
