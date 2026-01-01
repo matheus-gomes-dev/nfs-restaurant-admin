@@ -2,8 +2,9 @@ import authCheck from "@/app/helpers/authCheck"
 import { Order } from "@/types/orders"
 import { redirect } from "next/navigation"
 import RevenueChart from "@/app/components/RevenueChart"
+import ProductRevenueChart from "@/app/components/ProductRevenueChart"
 import VisualizationChart from "@/app/components/VisualizationChart"
-import { Box, Divider, Typography } from '@mui/material'
+import { Divider, Typography, Grid } from '@mui/material'
 
 
 export default async function DashboardPage() {
@@ -22,9 +23,18 @@ export default async function DashboardPage() {
     <>
       <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold' }}>Dashboard</Typography>
       <Divider />
-      <VisualizationChart title="Faturamento por Categoria">
-        <RevenueChart orders={orders} />
-      </VisualizationChart>
+      <Grid container spacing={3} sx={{ mt: 1 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <VisualizationChart title="Faturamento por Categoria">
+            <RevenueChart orders={orders} />
+          </VisualizationChart>
+        </Grid>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <VisualizationChart title="Faturamento por Produto">
+            <ProductRevenueChart orders={orders} />
+          </VisualizationChart>
+        </Grid>
+      </Grid>
     </>
   )
 }
