@@ -24,7 +24,6 @@ export default function OrderCard({
   onCompleteOrder: (orderId: string) => void;
   onCancelOrder: (orderId: string) => void;
 }) {
-  console.log({ order })
   const [loadingComplete, setLoadingComplete] = useState(false);
   const [loadingCancel, setLoadingCancel] = useState(false);
   const [orderStatus, setOrderStatus] = useState<OrderStatus>(selectedOrderStatus);

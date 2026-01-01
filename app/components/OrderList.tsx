@@ -41,7 +41,7 @@ export default function OrderList({
           </Select>
         </FormControl>
         <Button variant="contained" onClick={() => setModalOpen(true)}>
-          Adicionar Pedido
+          Novo Pedido
         </Button>
       </Box>
       
