@@ -29,7 +29,10 @@ export default function RevenueChart({ orders }: RevenueChartProps) {
       type: 'pie'
     },
     title: {
-      text: 'Faturamento por Categoria'
+      text: ''
+    },
+    credits: {
+      enabled: false
     },
     series: [{
       name: 'Faturamento',
