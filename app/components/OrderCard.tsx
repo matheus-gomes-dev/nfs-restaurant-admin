@@ -35,7 +35,7 @@ export default function OrderCard({
       await onCompleteOrder(id);
       setLoadingComplete(false);
       setOrderStatus('completa');
-      toast.success('Pedido concluído com sucesso!');
+      toast.success('Pedido concluído com sucesso! Atualize para recarregar a lista.');
     } catch (error) {
       setLoadingComplete(false);
       toast.error('Erro ao concluir o pedido.');
@@ -49,7 +49,7 @@ export default function OrderCard({
       await onCancelOrder(id);
       setLoadingCancel(false);
       setOrderStatus('cancelada');
-      toast.success('Pedido cancelado com sucesso!');
+      toast.success('Pedido cancelado com sucesso! Atualize para recarregar a lista.');
     } catch (error) {
       setLoadingCancel(false);
       toast.error('Erro ao cancelar o pedido.');
