@@ -1,14 +1,49 @@
+'use client'
+
 import { Product } from '@/types/products';
-import { Grid, Card, CardContent, Typography } from '@mui/material';
+import { Grid, Card, CardContent, Typography, TextField, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { useState } from 'react';
 
 interface ProductListProps {
   products: Product[];
 }
 
 export default function ProductList({ products }: ProductListProps) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('todas');
+  
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'todas' || product.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   return (
-    <Grid container spacing={2} sx={{ mt: 1 }} className="mb-4">
-      {products.map((product) => (
+    <Box>
+      <Box sx={{ display: 'flex', gap: 2, mt: 2, mb: 4 }}>
+        <TextField
+          fullWidth
+          label="Buscar produtos"
+          variant="outlined"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <FormControl sx={{ minWidth: 200 }}>
+          <InputLabel>Categoria</InputLabel>
+          <Select
+            value={selectedCategory}
+            label="Categoria"
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            <MenuItem value="todas">Todas</MenuItem>
+            <MenuItem value="lanches">Lanches</MenuItem>
+            <MenuItem value="açaí">Açaí</MenuItem>
+            <MenuItem value="bebidas">Bebidas</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+      <Grid container spacing={2}>
+        {filteredProducts.map((product) => (
         <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product._id}>
           <Card>
             <CardContent>
@@ -24,7 +59,8 @@ export default function ProductList({ products }: ProductListProps) {
             </CardContent>
           </Card>
         </Grid>
-      ))}
-    </Grid>
+        ))}
+      </Grid>
+    </Box>
   );
 }
