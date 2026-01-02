@@ -3,15 +3,28 @@
 import { Product } from '@/types/products';
 import { Grid, Card, CardContent, Typography, TextField, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useState } from 'react';
+import EditProductModal from './EditProductModal';
 
 interface ProductListProps {
   products: Product[];
+  onUpdateProduct: (product: Product) => void;
 }
 
-export default function ProductList({ products }: ProductListProps) {
+export default function ProductList({ products, onUpdateProduct }: ProductListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('todas');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   
+  const handleProductClick = (product: Product) => {
+    setSelectedProduct(product);
+    setModalOpen(true);
+  };
+
+  const handleSaveProduct = (product: Product) => {
+    onUpdateProduct(product);
+  };
+
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'todas' || product.category === selectedCategory;
@@ -45,7 +58,7 @@ export default function ProductList({ products }: ProductListProps) {
       <Grid container spacing={2}>
         {filteredProducts.map((product) => (
         <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product._id}>
-          <Card>
+          <Card sx={{ cursor: 'pointer' }} onClick={() => handleProductClick(product)}>
             <CardContent>
               <Typography variant="h6" component="h3" gutterBottom>
                 {product.name}
@@ -61,6 +74,13 @@ export default function ProductList({ products }: ProductListProps) {
         </Grid>
         ))}
       </Grid>
+      
+      <EditProductModal
+        open={modalOpen}
+        product={selectedProduct}
+        onClose={() => setModalOpen(false)}
+        onSave={handleSaveProduct}
+      />
     </Box>
   );
 }
