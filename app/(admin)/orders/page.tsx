@@ -78,6 +78,21 @@ export default async function OrdersPage() {
     }
   }
 
+  const onDeleteOrder = async (orderId: string) => {
+    'use server';
+    const result = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/${orderId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      }
+    })
+    if (result.status !== 200) {
+      const error = await result.text();
+      console.error('Error deleting order:', error);
+      throw new Error('Error deleting order')
+    }
+  }
+
   return (
     <>
       <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold' }}>Pedidos</Typography>
@@ -87,6 +102,7 @@ export default async function OrdersPage() {
         products={productsList}
         onCompleteOrder={onCompleteOrder}
         onCancelOrder={onCancelOrder}
+        onDeleteOrder={onDeleteOrder}
         onAddOrder={onAddOrder}
       />
     </>

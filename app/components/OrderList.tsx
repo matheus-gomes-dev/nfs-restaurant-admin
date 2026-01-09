@@ -12,12 +12,14 @@ export default function OrderList({
   products,
   onCompleteOrder, 
   onCancelOrder,
+  onDeleteOrder,
   onAddOrder
 }: { 
   orders: Order[];
   products: Product[];
   onCompleteOrder: (orderId: string) => void;
   onCancelOrder: (orderId: string) => void;
+  onDeleteOrder: (orderId: string) => void;
   onAddOrder: (order: Omit<Order, '_id' | 'createdAt' | 'updatedAt'>) => void;
 }) {
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus>('aguardando');
@@ -53,6 +55,7 @@ export default function OrderList({
           selectedOrderStatus={selectedStatus}
           onCompleteOrder={onCompleteOrder}
           onCancelOrder={onCancelOrder}
+          onDeleteOrder={onDeleteOrder}
         />
       ))}
       

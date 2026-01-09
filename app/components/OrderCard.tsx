@@ -16,16 +16,19 @@ export default function OrderCard({
   index, 
   selectedOrderStatus = 'aguardando',
   onCompleteOrder, 
-  onCancelOrder 
+  onCancelOrder,
+  onDeleteOrder
 }: { 
   order: Order; 
   index: number;
   selectedOrderStatus: OrderStatus;
   onCompleteOrder: (orderId: string) => void;
   onCancelOrder: (orderId: string) => void;
+  onDeleteOrder: (orderId: string) => void;
 }) {
   const [loadingComplete, setLoadingComplete] = useState(false);
   const [loadingCancel, setLoadingCancel] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
   const [orderStatus, setOrderStatus] = useState<OrderStatus>(selectedOrderStatus);
 
   const handleOrderComplete = async (id: string) => {
@@ -52,6 +55,19 @@ export default function OrderCard({
     } catch (error) {
       setLoadingCancel(false);
       toast.error('Erro ao cancelar o pedido.');
+      console.error(error);
+    }
+  }
+
+  const handleOrderDelete = async (id: string) => {
+    setLoadingDelete(true);
+    try {
+      await onDeleteOrder(id);
+      setLoadingDelete(false);
+      toast.success('Pedido excluído com sucesso! Atualize para recarregar a lista.');
+    } catch (error) {
+      setLoadingDelete(false);
+      toast.error('Erro ao excluir o pedido.');
       console.error(error);
     }
   }
@@ -114,6 +130,19 @@ export default function OrderCard({
               disabled={loadingComplete}
             >
               Cancelar
+            </Button>
+          </Box>
+        )}
+        {(order.status === 'completa' || order.status === 'cancelada') && (
+          <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+            <Button 
+              variant="outlined" 
+              color="error" 
+              size="small"
+              onClick={() => handleOrderDelete(order._id)}
+              loading={loadingDelete}
+            >
+              Excluir
             </Button>
           </Box>
         )}
