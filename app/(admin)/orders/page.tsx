@@ -1,6 +1,6 @@
 import OrderList from "@/app/components/OrderList"
 import authCheck from "@/app/helpers/authCheck"
-import { Order } from "@/types/orders"
+import { Order, OrderStatus } from "@/types/orders"
 import { Product } from "@/types/products"
 import { Divider, Typography } from "@mui/material"
 import { redirect } from "next/navigation"
@@ -25,7 +25,7 @@ export default async function OrdersPage() {
     .map((product: Product) => _pick(product, ['_id', 'name', 'description', 'price', 'category']))
 
 
-  const onCompleteOrder = async (orderId: string) => {
+  const onUpdateOrder = async (orderId: string, status: OrderStatus) => {
     'use server';
     const result = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/${orderId}`, {
       method: 'PUT',
@@ -33,7 +33,7 @@ export default async function OrdersPage() {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ status: 'completa' })
+      body: JSON.stringify({ status })
     })
     if (result.status !== 200) {
       const error = await result.text();
@@ -100,7 +100,7 @@ export default async function OrdersPage() {
       <OrderList
         orders={orders}
         products={productsList}
-        onCompleteOrder={onCompleteOrder}
+        onUpdateOrder={onUpdateOrder}
         onCancelOrder={onCancelOrder}
         onDeleteOrder={onDeleteOrder}
         onAddOrder={onAddOrder}

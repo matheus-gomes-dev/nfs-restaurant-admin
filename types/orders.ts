@@ -1,6 +1,6 @@
 import { Product } from "./products";
 
-export type OrderStatus = 'aguardando' | 'completa' | 'cancelada';
+export type OrderStatus = 'aguardando' | 'completa' | 'cancelada' | 'pagando';
 
 export interface Order {
   _id: string;

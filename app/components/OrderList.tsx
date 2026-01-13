@@ -10,14 +10,14 @@ import { Product } from "@/types/products";
 export default function OrderList({ 
   orders,
   products,
-  onCompleteOrder, 
+  onUpdateOrder, 
   onCancelOrder,
   onDeleteOrder,
   onAddOrder
 }: { 
   orders: Order[];
   products: Product[];
-  onCompleteOrder: (orderId: string) => void;
+  onUpdateOrder: (orderId: string, status: OrderStatus) => Promise<void>;
   onCancelOrder: (orderId: string) => void;
   onDeleteOrder: (orderId: string) => void;
   onAddOrder: (order: Omit<Order, '_id' | 'createdAt' | 'updatedAt'>) => void;
@@ -25,7 +25,8 @@ export default function OrderList({
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus>('aguardando');
   const [modalOpen, setModalOpen] = useState(false);
   
-  const filteredOrders = orders.filter(order => order.status === selectedStatus);
+  const filteredOrders = orders
+    .filter(order => order.status === selectedStatus || order.status === 'pagando' && selectedStatus === 'aguardando');
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2, mb: 4 }}>
@@ -53,7 +54,7 @@ export default function OrderList({
           order={order}
           index={index}
           selectedOrderStatus={selectedStatus}
-          onCompleteOrder={onCompleteOrder}
+          onUpdateOrder={onUpdateOrder}
           onCancelOrder={onCancelOrder}
           onDeleteOrder={onDeleteOrder}
         />

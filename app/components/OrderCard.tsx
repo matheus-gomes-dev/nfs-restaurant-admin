@@ -4,43 +4,45 @@ import { Order, OrderStatus } from "@/types/orders";
 import { Card, CardContent, Typography, Chip, Box, Button } from '@mui/material';
 import { useState } from 'react';
 import { toast } from "react-toastify";
+import { shouldRenderOrderCard } from "../helpers/shouldRenderOrderCard";
 
 const statusColors = {
   aguardando: 'warning',
   completa: 'success',
-  cancelada: 'error'
+  cancelada: 'error',
+  pagando: 'info'
 } as const;
 
 export default function OrderCard({ 
   order, 
   index, 
   selectedOrderStatus = 'aguardando',
-  onCompleteOrder, 
+  onUpdateOrder, 
   onCancelOrder,
   onDeleteOrder
 }: { 
   order: Order; 
   index: number;
   selectedOrderStatus: OrderStatus;
-  onCompleteOrder: (orderId: string) => void;
+  onUpdateOrder: (orderId: string, status: OrderStatus) => Promise<void>;
   onCancelOrder: (orderId: string) => void;
   onDeleteOrder: (orderId: string) => void;
 }) {
   const [loadingComplete, setLoadingComplete] = useState(false);
   const [loadingCancel, setLoadingCancel] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
-  const [orderStatus, setOrderStatus] = useState<OrderStatus>(selectedOrderStatus);
+  const [orderStatus, setOrderStatus] = useState<OrderStatus>(order.status);
 
-  const handleOrderComplete = async (id: string) => {
+  const handleOrderUpdate = async (id: string, status: OrderStatus) => {
     setLoadingComplete(true);
     try {
-      await onCompleteOrder(id);
+      await onUpdateOrder(id, status);
       setLoadingComplete(false);
-      setOrderStatus('completa');
-      toast.success('Pedido concluído com sucesso! Atualize para recarregar a lista.');
+      setOrderStatus(status);
+      toast.success('Status atualizado com sucesso! Se necessário, atualize para recarregar a lista.');
     } catch (error) {
       setLoadingComplete(false);
-      toast.error('Erro ao concluir o pedido.');
+      toast.error('Erro ao atualizar o status do pedido.');
       console.error(error);
     }
   }
@@ -72,7 +74,7 @@ export default function OrderCard({
     }
   }
 
-  if (orderStatus !== selectedOrderStatus) {
+  if (!shouldRenderOrderCard(orderStatus, selectedOrderStatus)) {
     return null;
   }
 
@@ -82,8 +84,8 @@ export default function OrderCard({
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
           <Typography variant="h6">Pedido {index + 1}</Typography>
           <Chip 
-            label={order.status} 
-            color={statusColors[order.status]}
+            label={orderStatus} 
+            color={statusColors[orderStatus]}
             size="small"
           />
         </Box>
@@ -109,17 +111,41 @@ export default function OrderCard({
         <Typography variant="body2" sx={{ mt: 2, fontWeight: 'bold' }} color="primary">
           Total: R$ {order.items.reduce((sum, item) => sum + item.price, 0).toFixed(2)}
         </Typography>
-        {order.status === 'aguardando' && (
+        {orderStatus === 'aguardando' && (
           <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
             <Button 
               variant="contained" 
               color="primary" 
               size="small"
-              onClick={() => handleOrderComplete(order._id)}
+              onClick={() => handleOrderUpdate(order._id, 'pagando')}
               loading={loadingComplete}
               disabled={loadingCancel}
             >
-              Concluir
+              Entregue
+            </Button>
+            <Button 
+              variant="outlined" 
+              color="error" 
+              size="small"
+              onClick={() => handleOrderCancel(order._id)}
+              loading={loadingCancel}
+              disabled={loadingComplete}
+            >
+              Cancelar
+            </Button>
+          </Box>
+        )}
+        {orderStatus === 'pagando' && (
+          <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              size="small"
+              onClick={() => handleOrderUpdate(order._id, 'completa')}
+              loading={loadingComplete}
+              disabled={loadingCancel}
+            >
+              Pago
             </Button>
             <Button 
               variant="outlined" 
