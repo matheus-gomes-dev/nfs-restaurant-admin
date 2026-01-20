@@ -18,25 +18,22 @@ export default function EditProductModal({ open, product, onClose, onSave }: Edi
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (product) {
-      setFormData(product);
-    }
+    setFormData(product);
   }, [product]);
 
   const handleSubmit = async () => {
-    if (!product) return;
     setLoading(true)
+    const payload = product ? { ...product, ...formData } : formData;
+    const successStatus = product ? 'atualizado' : 'criado';
+    const errorVerb = product ? 'atualizar' : 'criar';
     try {
-      await onSave({
-        ...product,
-        ...formData
-      });
+      await onSave(payload as Product);
       setLoading(false)
-      toast.success('Produto atualizado com sucesso! Recarregue para atualizar', toastConfig);
+      toast.success(`Produto ${successStatus} com sucesso! Recarregue para atualizar`, toastConfig);
       onClose();
     } catch (error) {
       console.error('Error saving product:', error);
-      toast.error('Erro ao atualizar produto!', toastConfig);
+      toast.error(`Erro ao ${errorVerb} produto!`, toastConfig);
       setLoading(false)
     }
   };
@@ -56,8 +53,9 @@ export default function EditProductModal({ open, product, onClose, onSave }: Edi
         maxHeight: '80vh',
         overflow: 'auto'
       }}>
-        <Typography variant="h6" mb={2}>Editar Produto</Typography>
-        
+        <Typography variant="h6" mb={2}>
+          {product?._id ? 'Editar Produto' : 'Criar Produto'}
+        </Typography>
         <TextField
           fullWidth
           label="Nome"
@@ -73,6 +71,14 @@ export default function EditProductModal({ open, product, onClose, onSave }: Edi
           onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }) as Product)}
           multiline
           rows={3}
+          sx={{ mb: 2 }}
+        />
+        
+        <TextField
+          fullWidth
+          label="URL da Imagem"
+          value={formData?.imgSrc}
+          onChange={(e) => setFormData(prev => ({ ...prev, imgSrc: e.target.value }) as Product)}
           sx={{ mb: 2 }}
         />
         
@@ -101,6 +107,8 @@ export default function EditProductModal({ open, product, onClose, onSave }: Edi
             <MenuItem value="lanches">Lanches</MenuItem>
             <MenuItem value="açaí">Açaí</MenuItem>
             <MenuItem value="bebidas">Bebidas</MenuItem>
+            <MenuItem value="refeições">Refeições</MenuItem>
+            <MenuItem value="sobremesas">Sobremesas</MenuItem>
           </Select>
         </FormControl>
         

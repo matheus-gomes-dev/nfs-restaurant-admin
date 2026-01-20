@@ -1,16 +1,17 @@
 'use client'
 
 import { Product } from '@/types/products';
-import { Grid, Card, CardContent, Typography, TextField, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Grid, Card, CardContent, Typography, TextField, Box, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
 import { useState } from 'react';
 import EditProductModal from './EditProductModal';
 
 interface ProductListProps {
   products: Product[];
   onUpdateProduct: (product: Product) => void;
+  onCreateProduct: (product: Omit<Product, '_id' | 'createdAt' | 'updatedAt'>) => void;
 }
 
-export default function ProductList({ products, onUpdateProduct }: ProductListProps) {
+export default function ProductList({ products, onUpdateProduct, onCreateProduct }: ProductListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('todas');
   const [modalOpen, setModalOpen] = useState(false);
@@ -21,8 +22,17 @@ export default function ProductList({ products, onUpdateProduct }: ProductListPr
     setModalOpen(true);
   };
 
+  const handleCreateProduct = () => {
+    setSelectedProduct(null);
+    setModalOpen(true);
+  };
+
   const handleSaveProduct = (product: Product) => {
-    onUpdateProduct(product);
+    if (selectedProduct) {
+      onUpdateProduct(product);
+    } else {
+      onCreateProduct(product);
+    }
   };
 
   const filteredProducts = products.filter(product => {
@@ -33,7 +43,7 @@ export default function ProductList({ products, onUpdateProduct }: ProductListPr
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', gap: 2, mt: 2, mb: 4 }}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mt: 2, mb: 4 }}>
         <TextField
           fullWidth
           label="Buscar produtos"
@@ -41,7 +51,7 @@ export default function ProductList({ products, onUpdateProduct }: ProductListPr
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <FormControl sx={{ minWidth: 200 }}>
+        <FormControl sx={{ minWidth: { xs: '100%', sm: 200 } }}>
           <InputLabel>Categoria</InputLabel>
           <Select
             value={selectedCategory}
@@ -52,8 +62,17 @@ export default function ProductList({ products, onUpdateProduct }: ProductListPr
             <MenuItem value="lanches">Lanches</MenuItem>
             <MenuItem value="açaí">Açaí</MenuItem>
             <MenuItem value="bebidas">Bebidas</MenuItem>
+            <MenuItem value="refeições">Refeições</MenuItem>
+            <MenuItem value="sobremesas">Sobremesas</MenuItem>
           </Select>
         </FormControl>
+        <Button 
+          variant="contained" 
+          onClick={handleCreateProduct}
+          sx={{ minWidth: { xs: '100%', sm: 'auto' } }}
+        >
+          Novo Produto
+        </Button>
       </Box>
       <Grid container spacing={2}>
         {filteredProducts.map((product) => (

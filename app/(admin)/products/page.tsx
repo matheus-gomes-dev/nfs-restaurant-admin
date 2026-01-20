@@ -28,11 +28,32 @@ export default async function ProductsPage() {
       throw new Error('Error completing order')
     }
   }
+
+  const handleCreateProduct = async (newProduct: Omit<Product, '_id' | 'createdAt' | 'updatedAt'>) => {
+    'use server';
+    const result = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newProduct)
+    })
+    if (result.status !== 200 && result.status !== 201) {
+      const error = await result.text();
+      console.error('Error creating product:', error);
+      throw new Error('Error creating product')
+    }
+  }
   return (
     <>
       <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold' }}>Produtos</Typography>
       <Divider />
-      <ProductList products={products} onUpdateProduct={handleUpdateProduct}/>
+      <ProductList
+        products={products}
+        onUpdateProduct={handleUpdateProduct}
+        onCreateProduct={handleCreateProduct}
+      />
     </>
   )
 }
