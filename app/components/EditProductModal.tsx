@@ -15,13 +15,26 @@ interface EditProductModalProps {
   onSave: (product: Product) => Promise<ProductResponse>;
 }
 
+const formInitialState: Product = {
+  _id: '',
+  name: '',
+  description: '',
+  price: 0,
+  cost: 0,
+  category: 'lanches',
+  imgSrc: '',
+  available: true,
+  createdAt: '',
+  updatedAt: ''
+};
+
 export default function EditProductModal({ open, product, onClose, onSave }: EditProductModalProps) {
-  const [formData, setFormData] = useState<Product | null>(product);
+  const [formData, setFormData] = useState<Product>(product || formInitialState);
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
-    setFormData(product);
+    setFormData(product || formInitialState);
   }, [product]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,8 +62,13 @@ export default function EditProductModal({ open, product, onClose, onSave }: Edi
     }
     toast.success(`Produto ${successStatus} com sucesso! Recarregue para atualizar`, toastConfig);
     onClose();
-    setFormData(null);
+    setFormData(formInitialState);
   };
+
+  const handleClose = () => {
+    onClose()
+    setFormData(formInitialState);
+  }
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -157,7 +175,7 @@ export default function EditProductModal({ open, product, onClose, onSave }: Edi
         />
         
         <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-          <Button onClick={onClose} disabled={loading}>Cancelar</Button>
+          <Button onClick={handleClose} disabled={loading}>Cancelar</Button>
           <Button
             variant="contained" 
             onClick={handleSubmit}
