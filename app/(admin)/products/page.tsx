@@ -4,6 +4,11 @@ import ProductList from "@/app/components/ProductList"
 import { Divider, Typography } from "@mui/material"
 import { redirect } from "next/navigation"
 
+export interface ProductResponse {
+  success: boolean;
+  error?: string;
+}
+
 export default async function ProductsPage() {
   const token = await authCheck()
   if (!token) {
@@ -12,7 +17,7 @@ export default async function ProductsPage() {
   const productsResponse = await fetch(`https://nfs-api.onrender.com/products`)
   const products: Product[] = await productsResponse.json()
 
-  const handleUpdateProduct = async (updatedProduct: Product) => {
+  const handleUpdateProduct = async (updatedProduct: Product): Promise<ProductResponse> => {
     'use server';
     const result = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${updatedProduct._id}`, {
       method: 'PUT',
@@ -24,12 +29,13 @@ export default async function ProductsPage() {
     })
     if (result.status !== 200) {
       const error = await result.text();
-      console.error('Error completing order:', error);
-      throw new Error('Error completing order')
+      console.error('Error updating product:', error);
+      return { success: false, error: 'Error updating product'};
     }
+    return { success: true };
   }
 
-  const handleCreateProduct = async (newProduct: Omit<Product, '_id' | 'createdAt' | 'updatedAt'>) => {
+  const handleCreateProduct = async (newProduct: Omit<Product, '_id' | 'createdAt' | 'updatedAt'>): Promise<ProductResponse> => {
     'use server';
     const result = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`, {
       method: 'POST',
@@ -42,9 +48,11 @@ export default async function ProductsPage() {
     if (result.status !== 200 && result.status !== 201) {
       const error = await result.text();
       console.error('Error creating product:', error);
-      throw new Error('Error creating product')
+      return { success: false, error: 'Error creating product'};
     }
+    return { success: true };
   }
+
   return (
     <>
       <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold' }}>Produtos</Typography>

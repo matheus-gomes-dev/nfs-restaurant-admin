@@ -3,39 +3,53 @@
 import { toastConfig } from '@/constants';
 import { Product } from '@/types/products';
 import { Modal, Box, Typography, TextField, Button, FormControl, InputLabel, Select, MenuItem, Switch, FormControlLabel } from '@mui/material';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { ProductResponse } from '../(admin)/products/page';
 
 interface EditProductModalProps {
   open: boolean;
   product: Product | null;
   onClose: () => void;
-  onSave: (product: Product) => void;
+  onSave: (product: Product) => Promise<ProductResponse>;
 }
 
 export default function EditProductModal({ open, product, onClose, onSave }: EditProductModalProps) {
   const [formData, setFormData] = useState<Product | null>(product);
   const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     setFormData(product);
   }, [product]);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, imgSrc: reader.result as string }) as Product);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = async () => {
     setLoading(true)
     const payload = product ? { ...product, ...formData } : formData;
     const successStatus = product ? 'atualizado' : 'criado';
     const errorVerb = product ? 'atualizar' : 'criar';
-    try {
-      await onSave(payload as Product);
-      setLoading(false)
-      toast.success(`Produto ${successStatus} com sucesso! Recarregue para atualizar`, toastConfig);
-      onClose();
-    } catch (error) {
-      console.error('Error saving product:', error);
+    const saveResult = await onSave(payload as Product);
+    setLoading(false)
+    if (!saveResult.success) {
       toast.error(`Erro ao ${errorVerb} produto!`, toastConfig);
-      setLoading(false)
+      return
     }
+    toast.success(`Produto ${successStatus} com sucesso! Recarregue para atualizar`, toastConfig);
+    onClose();
+    setFormData(null);
   };
 
   return (
@@ -60,7 +74,7 @@ export default function EditProductModal({ open, product, onClose, onSave }: Edi
         <TextField
           fullWidth
           label="Nome"
-          value={formData?.name}
+          value={formData?.name ?? ''}
           onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }) as Product)}
           sx={{ mb: 2 }}
         />
@@ -68,32 +82,50 @@ export default function EditProductModal({ open, product, onClose, onSave }: Edi
         <TextField
           fullWidth
           label="Descrição"
-          value={formData?.description}
+          value={formData?.description ?? ''}
           onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }) as Product)}
           multiline
           rows={3}
           sx={{ mb: 2 }}
         />
         
-        <TextField
-          fullWidth
-          label="URL da Imagem"
-          value={formData?.imgSrc}
-          onChange={(e) => setFormData(prev => ({ ...prev, imgSrc: e.target.value }) as Product)}
-          sx={{ mb: 2 }}
-        />
+        <Box sx={{ mb: 2 }}>
+          <Button
+            variant="outlined"
+            component="label"
+            fullWidth
+          >
+            Upload de Imagem
+            <input
+              type="file"
+              hidden
+              accept="image/*"
+              onChange={handleImageUpload}
+            />
+          </Button>
+          {formData?.imgSrc && (
+            <Box sx={{ mt: 1, display: 'flex', justifyContent: 'center' }}>
+              <Image
+                src={formData.imgSrc}
+                alt="Image preview"
+                width={100}
+                height={60}
+              />
+            </Box>
+          )}
+        </Box>
         
         <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
           <TextField
             label="Preço"
             type="number"
-            value={formData?.price}
+            value={formData?.price ?? 0}
             onChange={(e) => setFormData(prev => ({ ...prev, price: Number(e.target.value) }) as Product)}
           />
           <TextField
             label="Custo"
             type="number"
-            value={formData?.cost}
+            value={formData?.cost ?? 0}
             onChange={(e) => setFormData(prev => ({ ...prev, cost: Number(e.target.value) }) as Product)}
           />
         </Box>
@@ -126,7 +158,12 @@ export default function EditProductModal({ open, product, onClose, onSave }: Edi
         
         <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
           <Button onClick={onClose} disabled={loading}>Cancelar</Button>
-          <Button variant="contained" onClick={handleSubmit} loading={loading}>
+          <Button
+            variant="contained" 
+            onClick={handleSubmit}
+            loading={loading}
+            disabled={loading || !formData?.name || !formData?.price || !formData?.category}
+          >
             Salvar
           </Button>
         </Box>

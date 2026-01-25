@@ -4,11 +4,12 @@ import { Product } from '@/types/products';
 import { Grid, Card, CardContent, Typography, TextField, Box, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
 import { useState } from 'react';
 import EditProductModal from './EditProductModal';
+import { ProductResponse } from '../(admin)/products/page';
 
 interface ProductListProps {
   products: Product[];
-  onUpdateProduct: (product: Product) => void;
-  onCreateProduct: (product: Omit<Product, '_id' | 'createdAt' | 'updatedAt'>) => void;
+  onUpdateProduct: (product: Product) => Promise<ProductResponse>;
+  onCreateProduct: (product: Omit<Product, '_id' | 'createdAt' | 'updatedAt'>) => Promise<ProductResponse>;
 }
 
 export default function ProductList({ products, onUpdateProduct, onCreateProduct }: ProductListProps) {
@@ -27,12 +28,10 @@ export default function ProductList({ products, onUpdateProduct, onCreateProduct
     setModalOpen(true);
   };
 
-  const handleSaveProduct = (product: Product) => {
-    if (selectedProduct) {
-      onUpdateProduct(product);
-    } else {
-      onCreateProduct(product);
-    }
+  const handleSaveProduct = async (product: Product): Promise<ProductResponse> => {
+    return selectedProduct
+      ? await onUpdateProduct(product)
+      : await onCreateProduct(product);
   };
 
   const filteredProducts = products.filter(product => {
