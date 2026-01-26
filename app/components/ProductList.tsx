@@ -77,14 +77,12 @@ export default function ProductList({ products, onUpdateProduct, onCreateProduct
         {filteredProducts.map((product) => (
         <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product._id}>
           <Card sx={{ cursor: 'pointer' }} onClick={() => handleProductClick(product)}>
-            {product.imgSrc && (
-              <CardMedia
-                component="img"
-                height="50"
-                image={product.imgSrc}
-                alt={product.name}
-              />
-            )}
+            <CardMedia
+              component="img"
+              height="50"
+              image={product.imgSrc ?? '/menu-item-fallback-image.png'}
+              alt={product.name}
+            />
             <CardContent>
               <Typography variant="h6" component="h3" gutterBottom>
                 {product.name}
