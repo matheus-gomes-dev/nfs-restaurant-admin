@@ -1,7 +1,7 @@
 'use client'
 
 import { Product } from '@/types/products';
-import { Grid, Card, CardContent, Typography, TextField, Box, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
+import { Grid, Card, CardContent, Typography, TextField, Box, FormControl, InputLabel, Select, MenuItem, Button, CardMedia } from '@mui/material';
 import { useState } from 'react';
 import EditProductModal from './EditProductModal';
 import { ProductResponse } from '../(admin)/products/page';
@@ -77,6 +77,14 @@ export default function ProductList({ products, onUpdateProduct, onCreateProduct
         {filteredProducts.map((product) => (
         <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product._id}>
           <Card sx={{ cursor: 'pointer' }} onClick={() => handleProductClick(product)}>
+            {product.imgSrc && (
+              <CardMedia
+                component="img"
+                height="50"
+                image={product.imgSrc}
+                alt={product.name}
+              />
+            )}
             <CardContent>
               <Typography variant="h6" component="h3" gutterBottom>
                 {product.name}

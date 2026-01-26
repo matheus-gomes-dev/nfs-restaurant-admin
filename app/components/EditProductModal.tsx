@@ -16,7 +16,6 @@ interface EditProductModalProps {
 }
 
 const formInitialState: Product = {
-  _id: '',
   name: '',
   description: '',
   price: 0,
@@ -24,14 +23,11 @@ const formInitialState: Product = {
   category: 'lanches',
   imgSrc: '',
   available: true,
-  createdAt: '',
-  updatedAt: ''
 };
 
 export default function EditProductModal({ open, product, onClose, onSave }: EditProductModalProps) {
   const [formData, setFormData] = useState<Product>(product || formInitialState);
   const [loading, setLoading] = useState(false);
-  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     setFormData(product || formInitialState);
@@ -40,10 +36,10 @@ export default function EditProductModal({ open, product, onClose, onSave }: Edi
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData(prev => ({ ...prev, imgSrc: reader.result as string }) as Product);
+        const result = reader.result as string;
+        setFormData(prev => ({ ...prev, imgSrc: result }) as Product);
       };
       reader.readAsDataURL(file);
     }
