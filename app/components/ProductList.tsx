@@ -41,7 +41,7 @@ export default function ProductList({ products, onUpdateProduct, onCreateProduct
   });
 
   return (
-    <Box>
+    <Box className="mb-8">
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mt: 2, mb: 4 }}>
         <TextField
           fullWidth
