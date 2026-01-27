@@ -29,7 +29,15 @@ export default function EditStorageCustomerModal({ open, customer, onClose, onSa
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setFormData(customer || formInitialState);
+    if (customer) {
+      setFormData({
+        ...customer,
+        payday: customer.payday ? new Date(customer.payday).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        lastPaymentDate: customer.lastPaymentDate ? new Date(customer.lastPaymentDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      });
+    } else {
+      setFormData(formInitialState);
+    }
   }, [customer]);
 
   const handleCustomerImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -177,6 +185,7 @@ export default function EditStorageCustomerModal({ open, customer, onClose, onSa
           type="date"
           value={formData?.payday}
           onChange={(e) => setFormData(prev => ({ ...prev, payday: e.target.value }))}
+          slotProps={{ inputLabel: { shrink: true } }}
           sx={{ mb: 2 }}
         />
         
@@ -186,6 +195,7 @@ export default function EditStorageCustomerModal({ open, customer, onClose, onSa
           type="date"
           value={formData?.lastPaymentDate}
           onChange={(e) => setFormData(prev => ({ ...prev, lastPaymentDate: e.target.value }))}
+          slotProps={{ inputLabel: { shrink: true } }}
           sx={{ mb: 2 }}
         />
         
