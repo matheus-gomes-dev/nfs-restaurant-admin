@@ -81,7 +81,10 @@ export default function StorageCustomerList({
       <EditStorageCustomerModal
         open={modalOpen}
         customer={selectedCustomer}
-        onClose={() => setModalOpen(false)}
+        onClose={() => {
+          setModalOpen(false);
+          setSelectedCustomer(null);
+        }}
         onSave={handleSaveCustomer}
       />
     </Box>

@@ -102,7 +102,10 @@ export default function ProductList({ products, onUpdateProduct, onCreateProduct
       <EditProductModal
         open={modalOpen}
         product={selectedProduct}
-        onClose={() => setModalOpen(false)}
+        onClose={() => {
+          setModalOpen(false);
+          setSelectedProduct(null);
+        }}
         onSave={handleSaveProduct}
       />
     </Box>

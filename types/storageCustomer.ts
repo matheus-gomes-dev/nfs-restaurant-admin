@@ -3,7 +3,8 @@ export interface StorageCustomer {
   name: string;
   phone: string;
   fee: number;
-  payday: Date;
+  payday: string;
+  lastPaymentDate: string;
   customerPicture?: string;
   equipmentPicture?: string;
   active?: boolean;
