@@ -4,7 +4,6 @@ export interface StorageCustomer {
   phone: string;
   fee: number;
   payday: string;
-  lastPaymentDate: string;
   customerPicture?: string;
   equipmentPicture?: string;
   active?: boolean;

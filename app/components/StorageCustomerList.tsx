@@ -20,8 +20,6 @@ export default function StorageCustomerList({
   const [searchTerm, setSearchTerm] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<StorageCustomer | null>(null);
-
-  console.log({ storageCustomers })
   
   const handleCustomerClick = (customer: StorageCustomer) => {
     setSelectedCustomer(customer);
@@ -37,6 +35,14 @@ export default function StorageCustomerList({
     return selectedCustomer
       ? await onUpdateCustomer(customer)
       : await onCreateCustomer(customer);
+  };
+
+  const getDaysSinceLastPayment = (lastPaymentDate: string) => {
+    const today = new Date();
+    const lastPayment = new Date(lastPaymentDate);
+    const diffTime = Math.abs(today.getTime() - lastPayment.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
   };
 
   const filteredCustomers = storageCustomers.filter(customer => {
@@ -72,6 +78,17 @@ export default function StorageCustomerList({
                 <Typography variant="body2" color="text.secondary">
                   Telefone: {customer.phone}
                 </Typography>
+                {customer.payday && (
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      mt: 1,
+                      color: !customer.active ? 'text.secondary' : (getDaysSinceLastPayment(customer.payday) < 30 ? 'green' : 'red')
+                    }}
+                  >
+                    Último pagamento: há {getDaysSinceLastPayment(customer.payday)} dias
+                  </Typography>
+                )}
               </CardContent>
             </Card>
           </Grid>
