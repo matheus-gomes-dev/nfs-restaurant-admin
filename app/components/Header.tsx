@@ -1,7 +1,14 @@
 'use client';
 
 import { AppBar, Toolbar, Button, IconButton, Menu, MenuItem } from '@mui/material';
-import { LogoutOutlined, MenuOutlined, DashboardOutlined, ShoppingCartOutlined, InventoryOutlined } from '@mui/icons-material';
+import {
+  LogoutOutlined,
+  MenuOutlined,
+  DashboardOutlined,
+  ShoppingCartOutlined,
+  InventoryOutlined,
+  SurfingOutlined
+} from '@mui/icons-material';
 import { useRouter, usePathname } from 'next/navigation';
 import { deleteCookie } from 'cookies-next';
 import { useState } from 'react';
@@ -76,6 +83,16 @@ export default function Header() {
             </Button>
             {pathname === '/products' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-500"></div>}
           </div>
+          <div className="relative">
+            <Button 
+              color="inherit"
+              onClick={() => router.push('/storage-customers')}
+              startIcon={<SurfingOutlined />}
+            >
+              Guarderia
+            </Button>
+            {pathname === '/storage-customers' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-500"></div>}
+          </div>
           <IconButton color="inherit" onClick={handleLogout}>
             <LogoutOutlined />
           </IconButton>
@@ -99,6 +116,9 @@ export default function Header() {
             </MenuItem>
             <MenuItem onClick={() => handleNavigation('/products')}>
               <InventoryOutlined sx={{ mr: 1 }} /> Produtos
+            </MenuItem>
+            <MenuItem onClick={() => handleNavigation('/storage-customers')}>
+              <SurfingOutlined sx={{ mr: 1 }} /> Guarderia
             </MenuItem>
             <MenuItem onClick={handleLogout}>
               <LogoutOutlined sx={{ mr: 1 }} /> Logout
